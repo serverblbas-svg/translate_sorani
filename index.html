@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>وەرگێڕی سۆرانی TILIVIZO</title>
+    <style>
+        :root { --accent: #f0b90b; --bg: #0f0f10; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .container { width: 100%; max-width: 600px; background: #1a1a1e; padding: 25px; border-radius: 15px; border: 1px solid #333; text-align: center; }
+        textarea { width: 100%; height: 120px; background: #000; color: white; border: 1px solid #444; border-radius: 10px; padding: 15px; font-size: 1rem; margin-bottom: 15px; outline: none; resize: none; }
+        button { width: 100%; background: var(--accent); color: black; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 1rem; }
+        .result-box { margin-top: 20px; background: rgba(255,255,255,0.03); padding: 20px; border-radius: 10px; border: 1px dashed var(--accent); min-height: 80px; text-align: right; line-height: 1.7; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 style="color:var(--accent); margin-bottom:15px;">وەرگێڕی سۆرانی ✨</h2>
+    <textarea id="inputText" placeholder="لێرە بنووسە..."></textarea>
+    <button onclick="translateNow()">وەرگێڕان 🔁</button>
+    <div class="result-box" id="outputText">ئەنجام...</div>
+</div>
+
+<script>
+    async function translateNow() {
+        const text = document.getElementById('inputText').value;
+        const output = document.getElementById('outputText');
+
+        if (!text.trim()) return;
+        output.innerText = "چاوەڕێ بکە...";
+
+        try {
+            // بەکارهێنانی لینکی وەرگێڕان
+            const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=ku&dt=t&q=${encodeURIComponent(text)}`);
+            const data = await res.json();
+            
+            let result = "";
+            data[0].forEach(item => { if (item[0]) result += item[0]; });
+
+            // گۆڕینی وەڵامە کورمانجییەکان بۆ سۆرانی
+            result = result.replace(/Erê/g, "بەڵێ")
+                          .replace(/erê/g, "بەڵێ")
+                          .replace(/Ez /g, "من ")
+                          .replace(/ez /g, "من ")
+                          .replace(/Spas/g, "سوپاس")
+                          .replace(/spas/g, "سوپاس");
+
+            output.innerText = result;
+        } catch (error) {
+            output.innerText = "هەڵەیەک ڕوویدا لە پەیوەندی ئینتەرنێت!";
+        }
+    }
+</script>
+
+</body>
+</html>
